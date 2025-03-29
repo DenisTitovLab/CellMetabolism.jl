@@ -1,4 +1,4 @@
-
+using CellMetabolismBase
 
 glycolysis_pathway = MetabolicPathway(
     (:Glucose_media, :Lactate_media),

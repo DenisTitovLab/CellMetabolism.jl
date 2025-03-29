@@ -1,8 +1,8 @@
 @testitem "Code quality (Aqua.jl)" begin
     using Aqua
-    Aqua.test_all(CellMetabolismBase)
+    Aqua.test_all(CellMetabolism)
 end
 @testitem "Code linting (JET.jl)" begin
     using JET
-    JET.test_package(CellMetabolismBase; target_defined_modules=true)
+    JET.test_package(CellMetabolism; target_defined_modules=true)
 end

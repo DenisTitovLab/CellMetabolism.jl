@@ -1,5 +1,6 @@
 module CellMetabolism
 
-# Write your package code here.
+include("enzyme_rates_and_parameters.jl")
+include("pathways.jl")
 
 end

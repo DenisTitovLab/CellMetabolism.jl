@@ -13,11 +13,11 @@ Currently, CellMetabolism.jl supports the glycolysis pathway. The longterm goal 
 
 ## Features
 
-- Simulate `Glycolysis` activity using DifferentialEquations.jl at a wide range of parameter values and initial conditions
+- Simulate glycolysis activity using [DifferentialEquations.jl](https://docs.sciml.ai/DiffEqDocs/stable/) at a wide range of parameter values and initial conditions
 - Estimate model prediction uncertainty for comparison with experimental data
 - Perform validation to ensure that enzyme rate equations and ODEs are assembled correctly
 
 ## Roadmap
 
 - Add support for additional metabolic pathways, including TCA cycle, pentose phosphate pathway, and fatty acid metabolism
-- Add additional functionality through updates of CellMetabolismBase.jl such as support for Global Sensitivity Analysis (GSA) to identify parameters that control specific pathway behaviour, ability to simulate isotope tracing equations, support for units of parameters and initial conditions to ensure that the models are dimensionally consistent, etc.
+- Add additional functionality through updates of [CellMetabolismBase.jl](https://github.com/DenisTitovLab/CellMetabolismBase.jl) such as support for Global Sensitivity Analysis (GSA) to identify parameters that control specific pathway behaviour, ability to simulate isotope tracing equations, support for units of parameters and initial conditions to ensure that the models are dimensionally consistent, etc.

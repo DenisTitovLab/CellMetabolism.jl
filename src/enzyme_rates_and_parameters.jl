@@ -37,8 +37,6 @@ glycolysis_init_conc_w_uncertainty = LVector(
     Phosphate = (4.0e-3 ± 9e-4) / cell_volume_correction,
     NTP = (0.00186 ± 0.00022) / cell_volume_correction,
     NDP = (0.000354 ± 0.000058) / cell_volume_correction,
-    Phosphocreatine = 0.003 / cell_volume_correction,
-    Creatine = 0.0003 / cell_volume_correction,
     NAD = (9.2e-4 ± 4.1e-4) / cell_volume_correction,
     NADH = (8.4e-5 ± 3.6e-5) / cell_volume_correction,
     F26BP = 0.0 / cell_volume_correction,
@@ -184,13 +182,6 @@ glycolysis_params_w_uncertainty = LVector(
     NDPK_Vmax = 0.0,
     NDPK_Keq = 2.16, #Average of 2.57 (UDP), 2.71 (GDP) and 1.21 (CTP)
     NDPK_MW = 17149.0 / 1000,
-    CK_Km_ATP = 0.16e-3,
-    CK_Km_ADP = 0.11e-3,
-    CK_Km_Phosphocreatine = 0.9e-3,
-    CK_Km_Creatine = 2.3e-3,
-    CK_Vmax = 0.0,
-    CK_Keq = 0.00598 ± 0.00093,
-    CK_MW = 17149.0 / 1000,
     ATPase_Km_ATP = 1e-6,
     ATPase_Km_ADP = 1e-3,
     ATPase_Km_Phosphate = 1e-3,
@@ -226,7 +217,7 @@ julia> Glycolysis.rate_GLUT(metabs, glycolysis_params)
 0.02267962645321136
 ```
 """
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:GLUT1, (:Glucose_media,), (:Glucose,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:GLUT1, (:Glucose_media,), (:Glucose,)}, metabs, params)
     Rate = (
         (params.GLUT1_Vmax * params.GLUT1_Conc / params.GLUT1_Km_Glucose) *
         (metabs.Glucose_media - (1 / params.GLUT1_Keq) * metabs.Glucose) / (
@@ -238,8 +229,7 @@ julia> Glycolysis.rate_GLUT(metabs, glycolysis_params)
     return Rate
 end
 
-
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:HK1, (:Glucose, :ATP), (:G6P, :ADP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:HK1, (:Glucose, :ATP), (:G6P, :ADP), (:Phosphate,), (:G6P,)}, metabs, params)
     Z = (
         (
             1 +
@@ -273,8 +263,28 @@ end
     return Rate
 end
 
+@inline function CellMetabolismBase.remove_regulation(enzyme::Enzyme{:HK1,(:Glucose, :ATP),(:G6P, :ADP),(:Phosphate,),(:G6P,)}, params)
+    params_no_reg = deepcopy(params)
+    for reg in (activators(enzyme)..., inhibitors(enzyme)...)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, Val(reg))
+    end
+    return params_no_reg
+end
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:GPI, (:G6P,), (:F6P,)}, metabs, params)
+@inline function CellMetabolismBase.remove_regulation(::Enzyme{:HK1,(:Glucose, :ATP),(:G6P, :ADP),(:Phosphate,),(:G6P,)}, params, ::Val{:G6P})
+    params_no_reg = deepcopy(params)
+    params_no_reg.HK1_K_i_G6P_reg = Inf
+    params_no_reg.HK1_K_a_G6P_cat = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(::Enzyme{:HK1,(:Glucose, :ATP),(:G6P, :ADP),(:Phosphate,),(:G6P,)}, params, ::Val{:Phosphate})
+    params_no_reg = deepcopy(params)
+    params_no_reg.HK1_K_a_Pi = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.rate(::Enzyme{:GPI, (:G6P,), (:F6P,)}, metabs, params)
     Rate = (
         (params.GPI_Vmax * params.GPI_Conc / params.GPI_Km_G6P) *
         (metabs.G6P - (1 / params.GPI_Keq) * metabs.F6P) /
@@ -283,8 +293,7 @@ end
     return Rate
 end
 
-
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PFKP, (:F6P, :ATP,), (:F16BP, :ADP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PFKP, (:F6P, :ATP), (:F16BP, :ADP), (:Phosphate, :ADP, :F26BP), (:ATP, :Citrate)}, metabs, params)
 
     Z_a_cat = (
         1 +
@@ -330,8 +339,70 @@ end
     return Rate
 end
 
+@inline function CellMetabolismBase.remove_regulation(
+    enzyme::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_L = zero(eltype(params_no_reg))
+    for reg in (activators(enzyme)..., inhibitors(enzyme)...)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, Val(reg))
+    end
+    return params_no_reg
+end
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:ALDO, (:F16BP,), (:GAP, :DHAP,)}, metabs, params)
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:Phosphate},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_Phosphate = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:ADP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_a_ADP_reg = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:F26BP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_a_F26BP = Inf
+    params_no_reg.PFKP_K_i_F26BP = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:ATP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_i_ATP_reg = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:Citrate},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_i_Citrate = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.rate(::Enzyme{:ALDO, (:F16BP,), (:GAP, :DHAP)}, metabs, params)
     Rate = (
         (params.ALDO_Vmax * params.ALDO_Conc / params.ALDO_Km_F16BP) * (
             (metabs.F16BP - (1 / params.ALDO_Keq) * (metabs.DHAP * metabs.GAP)) / (
@@ -349,7 +420,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:TPI, (:DHAP,), (:GAP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:TPI, (:DHAP,), (:GAP,)}, metabs, params)
     Rate = (
         (params.TPI_Vmax * params.TPI_Conc / params.TPI_Km_DHAP) *
         (metabs.DHAP - (1 / params.TPI_Keq) * metabs.GAP) /
@@ -359,7 +430,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:GAPDH, (:GAP, :NAD, :Phosphate,), (:BPG, :NADH,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:GAPDH, (:GAP, :NAD, :Phosphate,), (:BPG, :NADH,)}, metabs, params)
     Z_a =
         (
             1 +
@@ -397,7 +468,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PGK, (:BPG, :ADP,), (:ThreePG, :ATP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PGK, (:BPG, :ADP,), (:ThreePG, :ATP,)}, metabs, params)
     Rate = (
         (
             params.PGK_Vmax * params.PGK_Conc /
@@ -421,7 +492,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PGAM, (:ThreePG,), (:TwoPG,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PGAM, (:ThreePG,), (:TwoPG,)}, metabs, params)
     Rate = (
         (params.PGAM_Vmax * params.PGAM_Conc / params.PGAM_Km_ThreePG) *
         (metabs.ThreePG - (1 / params.PGAM_Keq) * metabs.TwoPG) / (
@@ -434,7 +505,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:ENO, (:TwoPG,), (:PEP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:ENO, (:TwoPG,), (:PEP,)}, metabs, params)
     Rate = (
         (params.ENO_Vmax * params.ENO_Conc / params.ENO_Km_TwoPG) *
         (metabs.TwoPG - (1 / params.ENO_Keq) * metabs.PEP) /
@@ -444,7 +515,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PKM2, (:PEP, :ADP,), (:Pyruvate, :ATP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PKM2, (:PEP, :ADP), (:Pyruvate, :ATP), (:F16BP,), (:Phenylalanine,)}, metabs, params)
 
     Z_a_cat = (
         1 +
@@ -490,8 +561,41 @@ end
     return Rate
 end
 
+@inline function CellMetabolismBase.remove_regulation(
+    enzyme::Enzyme{:PKM2,(:PEP, :ADP),(:Pyruvate, :ATP),(:F16BP,),(:Phenylalanine,)},
+    params
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PKM2_L = zero(eltype(params))
+    for reg in (activators(enzyme)..., inhibitors(enzyme)...)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, Val(reg))
+    end
+    return params_no_reg
+end
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:LDH, (:Pyruvate, :NADH,), (:Lactate, :NAD,)}, metabs, params)
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PKM2,(:PEP, :ADP),(:Pyruvate, :ATP),(:F16BP,),(:Phenylalanine,)},
+    params,
+    ::Val{:F16BP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PKM2_K_a_F16BP = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PKM2,(:PEP, :ADP),(:Pyruvate, :ATP),(:F16BP,),(:Phenylalanine,)},
+    params,
+    ::Val{:Phenylalanine},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PKM2_K_a_Phenylalanine = Inf
+    params_no_reg.PKM2_K_i_Phenylalanine = Inf
+    return params_no_reg
+end
+
+
+@inline function CellMetabolismBase.rate(::Enzyme{:LDH, (:Pyruvate, :NADH,), (:Lactate, :NAD,)}, metabs, params)
     Rate = (
         (
             params.LDH_Vmax * params.LDH_Conc /
@@ -519,7 +623,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:MCT, (:Lactate,), (:Lactate_media,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:MCT, (:Lactate,), (:Lactate_media,)}, metabs, params)
     Rate = (
         (params.MCT_Vmax * params.MCT_Conc / params.MCT_Km_Lactate) *
         (metabs.Lactate - (1 / params.MCT_Keq) * metabs.Lactate_media) / (
@@ -532,7 +636,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:AK, (:ADP, :ADP,), (:ATP, :AMP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:AK, (:ADP, :ADP,), (:ATP, :AMP,)}, metabs, params)
     Rate = (
         (params.AK_Vmax / (params.AK_Km_ADP^2)) *
         (metabs.ADP^2 - (1 / params.AK_Keq) * (metabs.ATP * metabs.AMP)) / (
@@ -544,7 +648,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:NDPK, (:ATP, :NDP,), (:ADP, :NTP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:NDPK, (:ATP, :NDP,), (:ADP, :NTP,)}, metabs, params)
     Rate = (
         (params.NDPK_Vmax / (params.NDPK_Km_ATP * params.NDPK_Km_NDP)) * (
             (metabs.ATP * metabs.NDP - (1 / params.NDPK_Keq) * (metabs.NTP * metabs.ADP)) / (
@@ -557,26 +661,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:CK, (:ATP, :Creatine,), (:Phosphocreatine, :ADP,)}, metabs, params)
-    Rate = (
-        (params.CK_Vmax / (params.CK_Km_ATP * params.CK_Km_Creatine)) * (
-            (
-                metabs.ATP * metabs.Creatine -
-                (1 / params.CK_Keq) * (metabs.Phosphocreatine * metabs.ADP)
-            ) / (
-                (1 + metabs.ATP / params.CK_Km_ATP + metabs.ADP / params.CK_Km_ADP) * (
-                    1 +
-                    metabs.Phosphocreatine / params.CK_Km_Phosphocreatine +
-                    metabs.Creatine / params.CK_Km_Creatine
-                )
-            )
-        )
-    )
-    return Rate
-end
-
-
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:ATPase, (:ATP,), (:ADP, :Phosphate,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:ATPase, (:ATP,), (:ADP, :Phosphate,)}, metabs, params)
     Rate =
         (params.ATPase_Vmax / params.ATPase_Km_ATP) *
         (

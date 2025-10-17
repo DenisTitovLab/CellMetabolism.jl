@@ -275,7 +275,7 @@ end
 @inline function CellMetabolismBase.remove_regulation(enzyme::Enzyme{:HK1,(:Glucose, :ATP),(:G6P, :ADP),(:Phosphate,),(:G6P,)}, params)
     params_no_reg = deepcopy(params)
     for reg in (activators(enzyme)..., inhibitors(enzyme)...)
-        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, reg)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, Val(reg))
     end
     return params_no_reg
 end
@@ -353,9 +353,9 @@ end
     params
 )
     params_no_reg = deepcopy(params)
-    params_no_reg.PFKP_L = zero(eltype(params))
+    params_no_reg.PFKP_L = zero(eltype(params_no_reg))
     for reg in (activators(enzyme)..., inhibitors(enzyme)...)
-        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, reg)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, Val(reg))
     end
     return params_no_reg
 end
@@ -577,7 +577,7 @@ end
     params_no_reg = deepcopy(params)
     params_no_reg.PKM2_L = zero(eltype(params))
     for reg in (activators(enzyme)..., inhibitors(enzyme)...)
-        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, reg)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, Val(reg))
     end
     return params_no_reg
 end

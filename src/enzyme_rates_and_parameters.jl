@@ -238,8 +238,7 @@ julia> Glycolysis.rate_GLUT(metabs, glycolysis_params)
     return Rate
 end
 
-
-@inline function CellMetabolismBase.rate(::Enzyme{:HK1, (:Glucose, :ATP), (:G6P, :ADP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:HK1, (:Glucose, :ATP), (:G6P, :ADP), (:Phosphate,), (:G6P,)}, metabs, params)
     Z = (
         (
             1 +
@@ -273,6 +272,26 @@ end
     return Rate
 end
 
+@inline function CellMetabolismBase.remove_regulation(enzyme::Enzyme{:HK1,(:Glucose, :ATP),(:G6P, :ADP),(:Phosphate,),(:G6P,)}, params)
+    params_no_reg = deepcopy(params)
+    for reg in (activators(enzyme)..., inhibitors(enzyme)...)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, reg)
+    end
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(::Enzyme{:HK1,(:Glucose, :ATP),(:G6P, :ADP),(:Phosphate,),(:G6P,)}, params, ::Val{:G6P})
+    params_no_reg = deepcopy(params)
+    params_no_reg.HK1_K_i_G6P_reg = Inf
+    params_no_reg.HK1_K_a_G6P_cat = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(::Enzyme{:HK1,(:Glucose, :ATP),(:G6P, :ADP),(:Phosphate,),(:G6P,)}, params, ::Val{:Phosphate})
+    params_no_reg = deepcopy(params)
+    params_no_reg.HK1_K_a_Pi = Inf
+    return params_no_reg
+end
 
 @inline function CellMetabolismBase.rate(::Enzyme{:GPI, (:G6P,), (:F6P,)}, metabs, params)
     Rate = (
@@ -283,8 +302,7 @@ end
     return Rate
 end
 
-
-@inline function CellMetabolismBase.rate(::Enzyme{:PFKP, (:F6P, :ATP,), (:F16BP, :ADP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PFKP, (:F6P, :ATP), (:F16BP, :ADP), (:Phosphate, :ADP, :F26BP), (:ATP, :Citrate)}, metabs, params)
 
     Z_a_cat = (
         1 +
@@ -330,8 +348,70 @@ end
     return Rate
 end
 
+@inline function CellMetabolismBase.remove_regulation(
+    enzyme::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_L = zero(eltype(params))
+    for reg in (activators(enzyme)..., inhibitors(enzyme)...)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, reg)
+    end
+    return params_no_reg
+end
 
-@inline function CellMetabolismBase.rate(::Enzyme{:ALDO, (:F16BP,), (:GAP, :DHAP,)}, metabs, params)
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:Phosphate},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_Phosphate = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:ADP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_a_ADP_reg = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:F26BP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_a_F26BP = Inf
+    params_no_reg.PFKP_K_i_F26BP = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:ATP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_i_ATP_reg = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PFKP,(:F6P, :ATP),(:F16BP, :ADP),(:Phosphate, :ADP, :F26BP),(:ATP, :Citrate)},
+    params,
+    ::Val{:Citrate},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PFKP_K_i_Citrate = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.rate(::Enzyme{:ALDO, (:F16BP,), (:GAP, :DHAP)}, metabs, params)
     Rate = (
         (params.ALDO_Vmax * params.ALDO_Conc / params.ALDO_Km_F16BP) * (
             (metabs.F16BP - (1 / params.ALDO_Keq) * (metabs.DHAP * metabs.GAP)) / (
@@ -444,7 +524,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.rate(::Enzyme{:PKM2, (:PEP, :ADP,), (:Pyruvate, :ATP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PKM2, (:PEP, :ADP), (:Pyruvate, :ATP), (:F16BP,), (:Phenylalanine,)}, metabs, params)
 
     Z_a_cat = (
         1 +
@@ -488,6 +568,39 @@ end
         ) / ((Z_a_cat^4) * (Z_a_reg^4) + params.PKM2_L * (Z_i_cat^4) * (Z_i_reg^4))
 
     return Rate
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    enzyme::Enzyme{:PKM2,(:PEP, :ADP),(:Pyruvate, :ATP),(:F16BP,),(:Phenylalanine,)},
+    params
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PKM2_L = zero(eltype(params))
+    for reg in (activators(enzyme)..., inhibitors(enzyme)...)
+        params_no_reg = CellMetabolismBase.remove_regulation(enzyme, params_no_reg, reg)
+    end
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PKM2,(:PEP, :ADP),(:Pyruvate, :ATP),(:F16BP,),(:Phenylalanine,)},
+    params,
+    ::Val{:F16BP},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PKM2_K_a_F16BP = Inf
+    return params_no_reg
+end
+
+@inline function CellMetabolismBase.remove_regulation(
+    ::Enzyme{:PKM2,(:PEP, :ADP),(:Pyruvate, :ATP),(:F16BP,),(:Phenylalanine,)},
+    params,
+    ::Val{:Phenylalanine},
+)
+    params_no_reg = deepcopy(params)
+    params_no_reg.PKM2_K_a_Phenylalanine = Inf
+    params_no_reg.PKM2_K_i_Phenylalanine = Inf
+    return params_no_reg
 end
 
 

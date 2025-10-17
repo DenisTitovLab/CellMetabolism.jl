@@ -37,8 +37,6 @@ glycolysis_init_conc_w_uncertainty = LVector(
     Phosphate = (4.0e-3 ± 9e-4) / cell_volume_correction,
     NTP = (0.00186 ± 0.00022) / cell_volume_correction,
     NDP = (0.000354 ± 0.000058) / cell_volume_correction,
-    Phosphocreatine = 0.003 / cell_volume_correction,
-    Creatine = 0.0003 / cell_volume_correction,
     NAD = (9.2e-4 ± 4.1e-4) / cell_volume_correction,
     NADH = (8.4e-5 ± 3.6e-5) / cell_volume_correction,
     F26BP = 0.0 / cell_volume_correction,
@@ -184,13 +182,6 @@ glycolysis_params_w_uncertainty = LVector(
     NDPK_Vmax = 0.0,
     NDPK_Keq = 2.16, #Average of 2.57 (UDP), 2.71 (GDP) and 1.21 (CTP)
     NDPK_MW = 17149.0 / 1000,
-    CK_Km_ATP = 0.16e-3,
-    CK_Km_ADP = 0.11e-3,
-    CK_Km_Phosphocreatine = 0.9e-3,
-    CK_Km_Creatine = 2.3e-3,
-    CK_Vmax = 0.0,
-    CK_Keq = 0.00598 ± 0.00093,
-    CK_MW = 17149.0 / 1000,
     ATPase_Km_ATP = 1e-6,
     ATPase_Km_ADP = 1e-3,
     ATPase_Km_Phosphate = 1e-3,
@@ -663,25 +654,6 @@ end
             (metabs.ATP * metabs.NDP - (1 / params.NDPK_Keq) * (metabs.NTP * metabs.ADP)) / (
                 (1 + metabs.ATP / params.NDPK_Km_ATP + metabs.ADP / params.NDPK_Km_ADP) *
                 (1 + metabs.NTP / params.NDPK_Km_NTP + metabs.NDP / params.NDPK_Km_NDP)
-            )
-        )
-    )
-    return Rate
-end
-
-
-@inline function CellMetabolismBase.rate(::Enzyme{:CK, (:ATP, :Creatine,), (:Phosphocreatine, :ADP,)}, metabs, params)
-    Rate = (
-        (params.CK_Vmax / (params.CK_Km_ATP * params.CK_Km_Creatine)) * (
-            (
-                metabs.ATP * metabs.Creatine -
-                (1 / params.CK_Keq) * (metabs.Phosphocreatine * metabs.ADP)
-            ) / (
-                (1 + metabs.ATP / params.CK_Km_ATP + metabs.ADP / params.CK_Km_ADP) * (
-                    1 +
-                    metabs.Phosphocreatine / params.CK_Km_Phosphocreatine +
-                    metabs.Creatine / params.CK_Km_Creatine
-                )
             )
         )
     )

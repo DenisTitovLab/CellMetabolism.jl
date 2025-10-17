@@ -18,7 +18,6 @@ glycolysis_pathway = MetabolicPathway(
         (:MCT, (:Lactate,), (:Lactate_media,)),
         (:AK, (:ADP, :ADP), (:ATP, :AMP)),
         (:NDPK, (:ATP, :NDP), (:ADP, :NTP)),
-        (:CK, (:ATP, :Creatine), (:Phosphocreatine, :ADP)),
         (:ATPase, (:ATP,), (:ADP, :Phosphate)),
     ),
 )

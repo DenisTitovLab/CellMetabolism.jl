@@ -226,7 +226,7 @@ julia> Glycolysis.rate_GLUT(metabs, glycolysis_params)
 0.02267962645321136
 ```
 """
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:GLUT1, (:Glucose_media,), (:Glucose,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:GLUT1, (:Glucose_media,), (:Glucose,)}, metabs, params)
     Rate = (
         (params.GLUT1_Vmax * params.GLUT1_Conc / params.GLUT1_Km_Glucose) *
         (metabs.Glucose_media - (1 / params.GLUT1_Keq) * metabs.Glucose) / (
@@ -239,7 +239,7 @@ julia> Glycolysis.rate_GLUT(metabs, glycolysis_params)
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:HK1, (:Glucose, :ATP), (:G6P, :ADP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:HK1, (:Glucose, :ATP), (:G6P, :ADP,)}, metabs, params)
     Z = (
         (
             1 +
@@ -274,7 +274,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:GPI, (:G6P,), (:F6P,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:GPI, (:G6P,), (:F6P,)}, metabs, params)
     Rate = (
         (params.GPI_Vmax * params.GPI_Conc / params.GPI_Km_G6P) *
         (metabs.G6P - (1 / params.GPI_Keq) * metabs.F6P) /
@@ -284,7 +284,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PFKP, (:F6P, :ATP,), (:F16BP, :ADP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PFKP, (:F6P, :ATP,), (:F16BP, :ADP,)}, metabs, params)
 
     Z_a_cat = (
         1 +
@@ -331,7 +331,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:ALDO, (:F16BP,), (:GAP, :DHAP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:ALDO, (:F16BP,), (:GAP, :DHAP,)}, metabs, params)
     Rate = (
         (params.ALDO_Vmax * params.ALDO_Conc / params.ALDO_Km_F16BP) * (
             (metabs.F16BP - (1 / params.ALDO_Keq) * (metabs.DHAP * metabs.GAP)) / (
@@ -349,7 +349,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:TPI, (:DHAP,), (:GAP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:TPI, (:DHAP,), (:GAP,)}, metabs, params)
     Rate = (
         (params.TPI_Vmax * params.TPI_Conc / params.TPI_Km_DHAP) *
         (metabs.DHAP - (1 / params.TPI_Keq) * metabs.GAP) /
@@ -359,7 +359,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:GAPDH, (:GAP, :NAD, :Phosphate,), (:BPG, :NADH,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:GAPDH, (:GAP, :NAD, :Phosphate,), (:BPG, :NADH,)}, metabs, params)
     Z_a =
         (
             1 +
@@ -397,7 +397,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PGK, (:BPG, :ADP,), (:ThreePG, :ATP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PGK, (:BPG, :ADP,), (:ThreePG, :ATP,)}, metabs, params)
     Rate = (
         (
             params.PGK_Vmax * params.PGK_Conc /
@@ -421,7 +421,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PGAM, (:ThreePG,), (:TwoPG,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PGAM, (:ThreePG,), (:TwoPG,)}, metabs, params)
     Rate = (
         (params.PGAM_Vmax * params.PGAM_Conc / params.PGAM_Km_ThreePG) *
         (metabs.ThreePG - (1 / params.PGAM_Keq) * metabs.TwoPG) / (
@@ -434,7 +434,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:ENO, (:TwoPG,), (:PEP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:ENO, (:TwoPG,), (:PEP,)}, metabs, params)
     Rate = (
         (params.ENO_Vmax * params.ENO_Conc / params.ENO_Km_TwoPG) *
         (metabs.TwoPG - (1 / params.ENO_Keq) * metabs.PEP) /
@@ -444,7 +444,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:PKM2, (:PEP, :ADP,), (:Pyruvate, :ATP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:PKM2, (:PEP, :ADP,), (:Pyruvate, :ATP,)}, metabs, params)
 
     Z_a_cat = (
         1 +
@@ -491,7 +491,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:LDH, (:Pyruvate, :NADH,), (:Lactate, :NAD,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:LDH, (:Pyruvate, :NADH,), (:Lactate, :NAD,)}, metabs, params)
     Rate = (
         (
             params.LDH_Vmax * params.LDH_Conc /
@@ -519,7 +519,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:MCT, (:Lactate,), (:Lactate_media,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:MCT, (:Lactate,), (:Lactate_media,)}, metabs, params)
     Rate = (
         (params.MCT_Vmax * params.MCT_Conc / params.MCT_Km_Lactate) *
         (metabs.Lactate - (1 / params.MCT_Keq) * metabs.Lactate_media) / (
@@ -532,7 +532,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:AK, (:ADP, :ADP,), (:ATP, :AMP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:AK, (:ADP, :ADP,), (:ATP, :AMP,)}, metabs, params)
     Rate = (
         (params.AK_Vmax / (params.AK_Km_ADP^2)) *
         (metabs.ADP^2 - (1 / params.AK_Keq) * (metabs.ATP * metabs.AMP)) / (
@@ -544,7 +544,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:NDPK, (:ATP, :NDP,), (:ADP, :NTP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:NDPK, (:ATP, :NDP,), (:ADP, :NTP,)}, metabs, params)
     Rate = (
         (params.NDPK_Vmax / (params.NDPK_Km_ATP * params.NDPK_Km_NDP)) * (
             (metabs.ATP * metabs.NDP - (1 / params.NDPK_Keq) * (metabs.NTP * metabs.ADP)) / (
@@ -557,7 +557,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:CK, (:ATP, :Creatine,), (:Phosphocreatine, :ADP,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:CK, (:ATP, :Creatine,), (:Phosphocreatine, :ADP,)}, metabs, params)
     Rate = (
         (params.CK_Vmax / (params.CK_Km_ATP * params.CK_Km_Creatine)) * (
             (
@@ -576,7 +576,7 @@ end
 end
 
 
-@inline function CellMetabolismBase.enzyme_rate(::Enzyme{:ATPase, (:ATP,), (:ADP, :Phosphate,)}, metabs, params)
+@inline function CellMetabolismBase.rate(::Enzyme{:ATPase, (:ATP,), (:ADP, :Phosphate,)}, metabs, params)
     Rate =
         (params.ATPase_Vmax / params.ATPase_Km_ATP) *
         (

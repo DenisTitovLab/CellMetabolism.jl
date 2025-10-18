@@ -1,7 +1,7 @@
 name = "CellMetabolism"
 uuid = "d7c5e2dd-9163-4219-82bc-37cddd708ca9"
 authors = ["Denis Titov <titov@berkeley.edu>  and contributors"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 CellMetabolismBase = "29f58b35-15e1-4d3c-99d7-eccaac145095"

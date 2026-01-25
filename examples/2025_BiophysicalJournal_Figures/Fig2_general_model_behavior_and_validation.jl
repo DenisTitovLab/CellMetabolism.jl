@@ -1059,7 +1059,7 @@ label_g =
     fig[2, 8, TopLeft()] =
         Label(fig, "G", fontsize = 12, halign = :right, padding = (0, 10, 0, 0))
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_Fig2_model_behavior_and_validation_Lact_media_0_w_disequilibrium.pdf", fig, pt_per_unit = 1)

@@ -194,7 +194,7 @@ colgap!(fig.layout, 5)
 rowgap!(fig.layout, 5)
 resize_to_layout!(fig)
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_FigS2_effect_of_allostery_on_metab_levels.png", fig, px_per_unit = 4)

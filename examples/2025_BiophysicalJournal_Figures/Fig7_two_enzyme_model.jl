@@ -651,7 +651,7 @@ label_f = fig[2, 4, TopLeft()] = Label(fig, "F", fontsize=12, halign=:right, pad
 label_g = fig[2, 7, TopLeft()] = Label(fig, "G", fontsize=12, halign=:right, padding=(0, 10, 5, 0))
 label_h = fig[2, 10, TopLeft()] = Label(fig, "H", fontsize=12, halign=:right, padding=(0, 10, 5, 0))
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_Fig7_two_enzyme_model.pdf", fig, pt_per_unit = 1)

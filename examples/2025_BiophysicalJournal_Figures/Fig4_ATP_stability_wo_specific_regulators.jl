@@ -261,7 +261,7 @@ label_l = fig[3, 2, TopLeft()] = Label(fig, "L", fontsize = 12, halign = :right,
 label_m = fig[3, 3, TopLeft()] = Label(fig, "M", fontsize = 12, halign = :right, padding = (0, 7, -7, 0))
 label_n = fig[3, 4, TopLeft()] = Label(fig, "N", fontsize = 12, halign = :right, padding = (0, 7, -7, 0))
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_Fig4_ATP_stability_wo_specific_reg.pdf", fig, pt_per_unit = 1)

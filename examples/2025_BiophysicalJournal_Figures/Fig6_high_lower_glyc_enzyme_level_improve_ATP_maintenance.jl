@@ -373,7 +373,7 @@ label_c =
     fig[1, 3, TopLeft()] =
         Label(fig, "C", fontsize = 12, halign = :right, padding = (0, 10, 5, 0))
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_Fig6_high_lower_glyc_enz_level_required_for_ATP_maintenance.pdf", fig, pt_per_unit = 1)

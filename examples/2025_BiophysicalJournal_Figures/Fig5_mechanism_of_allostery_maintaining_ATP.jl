@@ -724,7 +724,7 @@ label_e = fig[2, 3, TopLeft()] = Label(
 label_f = fig[2, 5, TopLeft()] = Label(
     fig, "F", fontsize=12, halign=:right, padding=(0, 5, 5, 0))
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_Fig5_mechanism_of_ATP_maintenence_by_allost.pdf", fig, pt_per_unit = 1)

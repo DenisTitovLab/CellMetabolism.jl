@@ -440,7 +440,7 @@ label_f = fig[2, 3, TopLeft()] = Label(fig,
     halign = :right,
     padding = (0, 5, 5, 0))
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_Fig3_allostery_required_for_ATP_maintenence.png", fig, px_per_unit = 4)

@@ -844,6 +844,7 @@ label_h = fig[3, 3, TopLeft()] = Label(fig, "H", fontsize = 12, halign = :right,
 label_i = fig[3, 5, TopLeft()] = Label(fig, "I", fontsize = 12, halign = :right, padding = (0, 5, 10, 0))
 
 
-fig
+display(fig)
+
 # uncomment the line below to save the plot
-save("Results/$(Dates.format(now(),"mmddyy"))_FigS1_model_behavior_and_validation_w_CI.png", fig, px_per_unit = 4)
+# save("Results/$(Dates.format(now(),"mmddyy"))_FigS1_model_behavior_and_validation_w_CI.png", fig, px_per_unit = 4)

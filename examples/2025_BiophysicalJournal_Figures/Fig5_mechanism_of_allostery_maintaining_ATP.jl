@@ -66,10 +66,10 @@ start = now()
     #     Glycolysis.rate_ATPase(s, params) -
     #     Glycolysis.rate_GAPDH(s, params)
     ds.Phosphate = zero(T)
-    # ds.NTP = zero(T)
-    # ds.NDP = zero(T)
-    # ds.Phosphocreatine = zero(T)
-    # ds.Creatine = zero(T)
+    ds.NTP = zero(T)
+    ds.NDP = zero(T)
+    ds.Phosphocreatine = zero(T)
+    ds.Creatine = zero(T)
     ds.NAD = Glycolysis.rate_LDH(s, params) -
              Glycolysis.rate_GAPDH(s, params)
     ds.NADH = Glycolysis.rate_GAPDH(s, params) -
@@ -137,10 +137,10 @@ end
     ds.Phosphate =
         Glycolysis.rate_ATPase(s, params) -
         Glycolysis.rate_GAPDH(s, params)
-    # ds.NTP = zero(T)
-    # ds.NDP = zero(T)
-    # ds.Phosphocreatine = zero(T)
-    # ds.Creatine = zero(T)
+    ds.NTP = zero(T)
+    ds.NDP = zero(T)
+    ds.Phosphocreatine = zero(T)
+    ds.Creatine = zero(T)
     ds.NAD = Glycolysis.rate_LDH(s, params) -
              Glycolysis.rate_GAPDH(s, params)
     ds.NADH = Glycolysis.rate_GAPDH(s, params) -

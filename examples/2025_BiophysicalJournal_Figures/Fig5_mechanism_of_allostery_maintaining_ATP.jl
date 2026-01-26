@@ -14,7 +14,8 @@ addprocs()
 
 start = now()
 @everywhere function glycolysis_ODEs_fixed_Pi(ds, s, params, t)
-    ds.Glucose_media = 0.0
+    T = eltype(ds)
+    ds.Glucose_media = zero(T)
     ds.Glucose = Glycolysis.rate_GLUT(s, params) -
                  Glycolysis.rate_HK1(s, params)
     ds.G6P = Glycolysis.rate_HK1(s, params) -
@@ -43,7 +44,7 @@ start = now()
                   Glycolysis.rate_LDH(s, params)
     ds.Lactate = Glycolysis.rate_LDH(s, params) -
                  Glycolysis.rate_MCT(s, params)
-    ds.Lactate_media = 0.0
+    ds.Lactate_media = zero(T)
     ds.ATP = (
         -Glycolysis.rate_HK1(s, params) -
         Glycolysis.rate_PFKP(s, params) +
@@ -64,14 +65,18 @@ start = now()
     # ds.Phosphate =
     #     Glycolysis.rate_ATPase(s, params) -
     #     Glycolysis.rate_GAPDH(s, params)
-    ds.Phosphate = 0.0
+    ds.Phosphate = zero(T)
+    # ds.NTP = zero(T)
+    # ds.NDP = zero(T)
+    # ds.Phosphocreatine = zero(T)
+    # ds.Creatine = zero(T)
     ds.NAD = Glycolysis.rate_LDH(s, params) -
              Glycolysis.rate_GAPDH(s, params)
     ds.NADH = Glycolysis.rate_GAPDH(s, params) -
               Glycolysis.rate_LDH(s, params)
-    ds.F26BP = 0.0
-    ds.Citrate = 0.0
-    ds.Phenylalanine = 0.0
+    ds.F26BP = zero(T)
+    ds.Citrate = zero(T)
+    ds.Phenylalanine = zero(T)
 end
 
 @everywhere function glycolysis_ODEs_Vmax_HK_PFK_eq_ATPase(ds, s, params, t)
@@ -81,7 +86,8 @@ end
     # Glycolysis.rate_HK1(s, params)
     # Glycolysis.rate_PFKP(s, params)
     # Glycolysis.rate_ATPase(s, params)
-    ds.Glucose_media = 0.0
+    T = eltype(ds)
+    ds.Glucose_media = zero(T)
     ds.Glucose = Glycolysis.rate_GLUT(s, params) -
                  0.5 * Glycolysis.rate_ATPase(s, params)
     ds.G6P = 0.5 * Glycolysis.rate_ATPase(s, params) -
@@ -110,7 +116,7 @@ end
                   Glycolysis.rate_LDH(s, params)
     ds.Lactate = Glycolysis.rate_LDH(s, params) -
                  Glycolysis.rate_MCT(s, params)
-    ds.Lactate_media = 0.0
+    ds.Lactate_media = zero(T)
     ds.ATP = (
         -0.5 * Glycolysis.rate_ATPase(s, params) -
         0.5 * Glycolysis.rate_ATPase(s, params) +
@@ -131,13 +137,17 @@ end
     ds.Phosphate =
         Glycolysis.rate_ATPase(s, params) -
         Glycolysis.rate_GAPDH(s, params)
+    # ds.NTP = zero(T)
+    # ds.NDP = zero(T)
+    # ds.Phosphocreatine = zero(T)
+    # ds.Creatine = zero(T)
     ds.NAD = Glycolysis.rate_LDH(s, params) -
              Glycolysis.rate_GAPDH(s, params)
     ds.NADH = Glycolysis.rate_GAPDH(s, params) -
               Glycolysis.rate_LDH(s, params)
-    ds.F26BP = 0.0
-    ds.Citrate = 0.0
-    ds.Phenylalanine = 0.0
+    ds.F26BP = zero(T)
+    ds.Citrate = zero(T)
+    ds.Phenylalanine = zero(T)
 end
 
 function find_ATP_at_ATPase_range(

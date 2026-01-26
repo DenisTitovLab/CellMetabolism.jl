@@ -1,5 +1,5 @@
 using Glycolysis
-using DifferentialEquations, ProgressMeter
+using OrdinaryDiffEq, DiffEqCallbacks, ProgressMeter
 using CairoMakie, Dates, Printf, Statistics, StatsBase
 using DataFrames, CSV
 
@@ -95,7 +95,7 @@ PFKP_reg = [:PFKP_L, :PFKP_K_a_F6P, :PFKP_K_i_ATP_reg, :PFKP_K_a_ADP_reg, :PFKP_
 HK1_PFKP_reg = [HK1_reg; PFKP_reg]
 HK1_PFKP_Km_Vmax = [HK1_Km_Vmax; PFKP_Km_Vmax]
 PKM2_reg = [:PKM2_a_KdF16BP, :PKM2_i_KdF16BP]
-GAPDH = [
+GAPDH_params = [
     param for param in propertynames(glycolysis_params) if occursin("GAPDH", string(param))
 ]
 
@@ -103,15 +103,15 @@ Keqs =
     [param for param in propertynames(glycolysis_params) if occursin("Keq", string(param))]
 Other = [
     param for param in propertynames(glycolysis_params) if
-    param ∉ [HK1_PFKP_Km_Vmax; HK1_PFKP_reg; GAPDH]
+    param ∉ [HK1_PFKP_Km_Vmax; HK1_PFKP_reg; GAPDH_params]
 ]
 
-params_group_names = [:All, :HK1_PFKP_Km_Vmax, :HK1_PFKP_reg, :GAPDH, :All_Other]
+params_group_names = [:All, :HK1_PFKP_Km_Vmax, :HK1_PFKP_reg, :GAPDH_params, :All_Other]
 params_names = [
     [name for name in propertynames(glycolysis_params)],
     HK1_PFKP_Km_Vmax,
     HK1_PFKP_reg,
-    GAPDH,
+    GAPDH_params,
     Other,
 ]
 

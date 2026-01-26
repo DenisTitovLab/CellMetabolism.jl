@@ -2,7 +2,7 @@
 # the code is parallelized so the time will scale with the number of CPU cores
 
 using Glycolysis
-using DifferentialEquations
+using OrdinaryDiffEq, DiffEqCallbacks
 using CairoMakie, DataFrames, Dates, Printf, CSV, Statistics
 
 
@@ -11,7 +11,7 @@ using CairoMakie, DataFrames, Dates, Printf, CSV, Statistics
 using Distributed
 addprocs(8; exeflags = "--project")
 @everywhere using Glycolysis
-@everywhere using DifferentialEquations, ProgressMeter
+@everywhere using OrdinaryDiffEq, DiffEqCallbacks, ProgressMeter
 using Distributions, LabelledArrays, Statistics, StatsBase, DataFrames, CSV
 using DataFrames, CSV, Dates
 

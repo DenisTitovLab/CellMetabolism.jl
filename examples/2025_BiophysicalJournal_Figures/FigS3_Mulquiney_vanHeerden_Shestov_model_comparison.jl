@@ -1,5 +1,5 @@
 using Glycolysis
-using DifferentialEquations, ProgressMeter
+using OrdinaryDiffEq, DiffEqCallbacks, ProgressMeter
 using CairoMakie, Dates, Printf, Statistics, StatsBase
 using DataFrames, CSV
 

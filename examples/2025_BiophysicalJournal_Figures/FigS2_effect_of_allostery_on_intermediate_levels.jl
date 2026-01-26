@@ -1,5 +1,5 @@
 using Glycolysis
-using DifferentialEquations, BenchmarkTools
+using OrdinaryDiffEq, DiffEqCallbacks, BenchmarkTools
 using CairoMakie, DataFrames, Dates, Printf, CSV, XLSX, Statistics, Measurements
 using SwarmMakie
 # CairoMakie.activate!(type = "svg")
@@ -117,8 +117,8 @@ for (i, name) in enumerate(column_names)
         ax1,
         i * ones(length(experimental_data)),
         experimental_data,
-        algorithm = QuasirandomJitter(; jitter_width = 1.0),
-        gutter = 1.0,
+        algorithm = QuasirandomJitter(; width = 1.0, gap = 0.0),
+        gap = 1.0,
         markersize = 3,
         strokewidth = 0.1,
         color = (:white, 0.1),

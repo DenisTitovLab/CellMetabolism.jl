@@ -213,7 +213,6 @@ res = @time pmap(
     x -> minimal_model_output(x, minimal_glycolysis_ODEs, minimal_model_initial_concentrations, n_Vmax_ATPase_values),
     [generate_random_params() for i = 1:n_repeats],
 )
-vscodedisplay(two_model_sims_res_df)
 two_model_sims_res_df = DataFrame(res)
 # CSV.write(
 #     "Results/$(Dates.format(now(),"mmddyy"))_hist_two_enzyme_model_$(n_repeats)_repeats_no_allost_const_Pi.csv",

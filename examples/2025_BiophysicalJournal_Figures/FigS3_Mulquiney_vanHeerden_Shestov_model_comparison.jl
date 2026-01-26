@@ -1,5 +1,5 @@
 using Glycolysis
-using DifferentialEquations, ProgressMeter
+using OrdinaryDiffEq, DiffEqCallbacks, ProgressMeter
 using CairoMakie, Dates, Printf, Statistics, StatsBase
 using DataFrames, CSV
 
@@ -849,7 +849,9 @@ label_i = fig[3, 3, TopLeft()] = Label(fig,
     fontsize = 12,
     halign = :right,
     padding = (0, 5, 5, 0))
-fig
+
+display(fig)
+
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_FigS3_Mulquiney_Shestov_van_Heerden_models.png", fig, px_per_unit = 4)

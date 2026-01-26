@@ -213,7 +213,6 @@ res = @time pmap(
     x -> minimal_model_output(x, minimal_glycolysis_ODEs, minimal_model_initial_concentrations, n_Vmax_ATPase_values),
     [generate_random_params() for i = 1:n_repeats],
 )
-vscodedisplay(two_model_sims_res_df)
 two_model_sims_res_df = DataFrame(res)
 # CSV.write(
 #     "Results/$(Dates.format(now(),"mmddyy"))_hist_two_enzyme_model_$(n_repeats)_repeats_no_allost_const_Pi.csv",
@@ -651,7 +650,7 @@ label_f = fig[2, 4, TopLeft()] = Label(fig, "F", fontsize=12, halign=:right, pad
 label_g = fig[2, 7, TopLeft()] = Label(fig, "G", fontsize=12, halign=:right, padding=(0, 10, 5, 0))
 label_h = fig[2, 10, TopLeft()] = Label(fig, "H", fontsize=12, halign=:right, padding=(0, 10, 5, 0))
 
-fig
+display(fig)
 
 # uncomment the line below to save the plot
 # save("Results/$(Dates.format(now(),"mmddyy"))_Fig7_two_enzyme_model.pdf", fig, pt_per_unit = 1)

@@ -2,7 +2,7 @@
 # the code is parallelized so the time will scale with the number of CPU cores
 
 using Glycolysis
-using DifferentialEquations
+using OrdinaryDiffEq, DiffEqCallbacks
 using CairoMakie, DataFrames, Dates, Printf, CSV, Statistics
 
 
@@ -11,7 +11,7 @@ using CairoMakie, DataFrames, Dates, Printf, CSV, Statistics
 using Distributed
 addprocs(8; exeflags = "--project")
 @everywhere using Glycolysis
-@everywhere using DifferentialEquations, ProgressMeter
+@everywhere using OrdinaryDiffEq, DiffEqCallbacks, ProgressMeter
 using Distributions, LabelledArrays, Statistics, StatsBase, DataFrames, CSV
 using DataFrames, CSV, Dates
 
@@ -844,6 +844,7 @@ label_h = fig[3, 3, TopLeft()] = Label(fig, "H", fontsize = 12, halign = :right,
 label_i = fig[3, 5, TopLeft()] = Label(fig, "I", fontsize = 12, halign = :right, padding = (0, 5, 10, 0))
 
 
-fig
+display(fig)
+
 # uncomment the line below to save the plot
-save("Results/$(Dates.format(now(),"mmddyy"))_FigS1_model_behavior_and_validation_w_CI.png", fig, px_per_unit = 4)
+# save("Results/$(Dates.format(now(),"mmddyy"))_FigS1_model_behavior_and_validation_w_CI.png", fig, px_per_unit = 4)

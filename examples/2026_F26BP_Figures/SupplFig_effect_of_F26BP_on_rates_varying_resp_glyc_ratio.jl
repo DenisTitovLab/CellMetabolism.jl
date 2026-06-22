@@ -235,7 +235,7 @@ for cond in conditions
     ax = Axis(
         fig[1, cond.col],
         xlabel = "[F26BP], M",
-        ylabel = "Rate of ATP cons. or prod., M/s",
+        ylabel = "Rate of ATP cons. or prod., M/min",
         title = cond.title,
         xscale = log10,
         xticklabelsize = 10,

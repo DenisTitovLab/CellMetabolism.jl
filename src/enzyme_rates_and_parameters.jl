@@ -193,14 +193,14 @@ glycolysis_params = Measurements.value.(glycolysis_params_w_uncertainty)
 
 #=
     This file contains functions that take M concentrations of glycolytic metabolites as input and
-    and generate rates of glycolytic reactions in M/s
+    and generate rates of glycolytic reactions in M/min
 =#
 
 
 """
     rate(::Enzyme{:GLUT1}, metabs, params)
 
-Calculate rate (M/s units) of GLUT transporter from concentrations (M units) of `Glucose_media` and `Glucose` according to the following equation:
+Calculate rate (M/min units) of GLUT transporter from concentrations (M units) of `Glucose_media` and `Glucose` according to the following equation:
 
 ```math
 Rate = \\frac{{V_{max} \\cdot Conc}}{{K_{M}^{Glucose}}} \\cdot \\frac{{Glucose_{media} - \\frac{1}{K_{eq}} \\cdot Glucose}}{1 + \\frac{Glucose_{media}}{K_{M}^{Glucose}} + \\frac{Glucose}{K_{M}^{Glucose}}}

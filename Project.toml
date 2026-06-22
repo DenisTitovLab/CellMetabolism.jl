@@ -32,8 +32,3 @@ BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 
 [targets]
 test = ["Aqua", "JET", "Test", "TestItemRunner", "BenchmarkTools", "OrdinaryDiffEq"]
-
-# TEMPORARY: bridges the mutual CellMetabolism <-> CellMetabolismBase bump while
-# CellMetabolismBase 0.4 is unregistered. Remove this section before registering.
-[sources]
-CellMetabolismBase = {url = "https://github.com/DenisTitovLab/CellMetabolismBase.jl", rev = "bump-ordinarydiffeq-v7"}

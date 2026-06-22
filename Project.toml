@@ -1,7 +1,7 @@
 name = "CellMetabolism"
 uuid = "d7c5e2dd-9163-4219-82bc-37cddd708ca9"
 authors = ["Denis Titov <titov@berkeley.edu>  and contributors"]
-version = "0.2.2"
+version = "0.3.0"
 
 [deps]
 CellMetabolismBase = "29f58b35-15e1-4d3c-99d7-eccaac145095"
@@ -10,17 +10,17 @@ Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 
 [compat]
-CellMetabolismBase = "0.3.1"
+CellMetabolismBase = "0.4"
 LabelledArrays = "1.16.0"
 Measurements = "2.12.0"
 Aqua = "0.8.11"
 BenchmarkTools = "1.6"
 Distributions = "0.25.117"
 JET = "0.10, 0.11"
-OrdinaryDiffEq = "6.91"
+OrdinaryDiffEq = "7"
 Test = "1.10"
 TestItemRunner = "1.1.0"
-julia = "1.10, 1.11, 1.12"
+julia = "1.10"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
